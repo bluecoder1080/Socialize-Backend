@@ -69,7 +69,7 @@ app.delete("/user", async (req, res) => {
 });
 
 //It will Update by id .
-app.put("/user", async (req, res) => {
+app.patch("/user", async (req, res) => {
   const id = req.body.id;
   const content = req.body;
   try {
