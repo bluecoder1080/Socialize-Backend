@@ -61,7 +61,7 @@ app.get("/fid", async (req, res) => {
 app.delete("/user", async (req, res) => {
   const id = req.body.id;
   try {
-    const user = await User.findByIdAndDelete({_id : id});
+    const user = await User.findByIdAndDelete({ _id: id });
     res.send("User Deleted !!");
   } catch (e) {
     res.send("There is error which is " + e);
@@ -69,14 +69,25 @@ app.delete("/user", async (req, res) => {
 });
 
 //It will Update by id .
-app.patch("/user", async (req, res) => {
-  const id = req.body.id;
+app.patch("/user/:id", async (req, res) => {
+  // const userId = req.params?.userId
+  const id = req.params?.id;
   const content = req.body;
   try {
-    const user = await User.findByIdAndUpdate({_id : id},content);
-    res.send("User Updated  !!");
+    const ALLOWED_UPDATES = ["photoUrl", "About", "Gender", "Age"];
+    const isUpdateAllowed = Object.keys(content).every((k) =>
+      ALLOWED_UPDATES.includes(k)
+    );
+    if (!isUpdateAllowed) {
+      throw new Error("Updates Not Allowed");
+    }
+    const user = await User.findByIdAndUpdate(id, content, {
+      runValidators: true,
+    });
+
+    res.status(200).send({ message: "User updated!"});
   } catch (e) {
-    res.send("There is error which is " + e);
+    res.status(400).send({ error: e.message });
   }
 });
 
