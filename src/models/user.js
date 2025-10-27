@@ -1,4 +1,6 @@
 const mongoose = require("mongoose");
+var validator = require("validator");
+
 
 const userSchema = new mongoose.Schema(
   {
@@ -20,12 +22,22 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
       match: [/^\S+@\S+\.\S+$/, "Please enter a valid email address"],
+      validate(value) {
+        if (!validator.isEmail(value)) {
+          throw new Error("Invalid Email Address" + value);
+        }
+      },
     },
     Password: {
       type: String,
       required: [true, "Password is required"],
       minlength: [6, "Password must be at least 6 characters long"],
       select: false,
+      validate(value) {
+        if (!validator.isStrongPassword(value)) {
+          throw new Error("Password Is Weak");
+        }
+      },
     },
     Gender: {
       type: String,

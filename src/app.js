@@ -2,20 +2,38 @@ const express = require("express");
 const app = express();
 const dbConnection = require("./config/database");
 const User = require("./models/user");
+const { validateSignupData } = require("./utils/validator");
+const bcrypt = require("bcrypt");
 
 app.use(express.json());
 
 app.post("/signup", async (req, res) => {
-  console.log(req.body);
-  // Creating a new instsnce in user !
-  const user = new User(req.body);
   try {
+    // Validate The User .
+    validateSignupData(req);
+
+    // Getting The Contents from User !
+    const { FirstName, LastName, Email, Password } = req.body;
+
+    // Encrypting The Password.
+    const PasswordHash = await bcrypt.hash(Password, 10);
+
+    // Creating New Instance of User .
+    const user = new User({
+      FirstName,
+      LastName,
+      Email,
+      Password : PasswordHash,
+    });
+
     await user.save();
     res.send("User Added Successfully !!!");
   } catch (err) {
     res.status(400).send("Error While Saving the user" + err.message);
   }
 });
+
+
 //It will be search user by Email .
 app.get("/user", async (req, res) => {
   try {
@@ -85,7 +103,7 @@ app.patch("/user/:id", async (req, res) => {
       runValidators: true,
     });
 
-    res.status(200).send({ message: "User updated!"});
+    res.status(200).send({ message: "User updated!" });
   } catch (e) {
     res.status(400).send({ error: e.message });
   }
