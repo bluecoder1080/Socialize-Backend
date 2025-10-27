@@ -4,8 +4,13 @@ const dbConnection = require("./config/database");
 const User = require("./models/user");
 const { validateSignupData } = require("./utils/validator");
 const bcrypt = require("bcrypt");
+var cookieParser = require("cookie-parser");
+var jwt = require("jsonwebtoken");
+const dotenv = require("dotenv");
+dotenv.config();
 
 app.use(express.json());
+app.use(cookieParser());
 // Signup End Point .
 app.post("/signup", async (req, res) => {
   try {
@@ -43,35 +48,52 @@ app.post("/signup", async (req, res) => {
 
 // Signin End Point .
 app.post("/signin", async (req, res) => {
-
   try {
     const { Email, Password } = req.body;
-    
+
     const user = await User.findOne({ Email }).select("+Password");
-   
+
     if (!user) {
       throw new Error("Invalid Credentials !");
     }
-    
-  
-    const IsPasswordValid = await bcrypt.compare(Password, user.Password);
-   
 
-    if (!IsPasswordValid) {
-      throw new Error("Invalid Credentials !");
-    } else {
+    const IsPasswordValid = await bcrypt.compare(Password, user.Password);
+
+    if (IsPasswordValid) {
+      // Token in form of cookie !
+
+      var token = jwt.sign({ _id: user._id }, "process.env.JWT_SECRET_KEY");
+
+      res.cookie("token", token);
       res.send("Login Successfull ! ");
+    } else {
+      throw new Error("Invalid Credentials !");
     }
   } catch (err) {
     res.status(400).send("The Error is " + err);
   }
 });
+//Profile Section
+app.get("/profile", async (req, res) => {
+  try {
+    const cookies = req.cookies;
+    const { token } = cookies;
+   
 
+    var decoded = await jwt.verify(token, "process.env.JWT_SECRET_KEY");
+
+    const { _id } = decoded;
+    const user = await User.findOne({_id : _id})
+    res.send(user)
+  } catch (err) {
+    res.send("The error is " + err.message);
+  }
+});
 //It will be search user by Email .
 app.get("/user", async (req, res) => {
   try {
     const email = req.body.email;
-  
+
     const user = await User.find({ Email: email });
     if (user.length === 0) {
       res.send("User Does Not Exist !! ");
