@@ -6,7 +6,7 @@ const { validateSignupData } = require("./utils/validator");
 const bcrypt = require("bcrypt");
 
 app.use(express.json());
-
+// Signup End Point .
 app.post("/signup", async (req, res) => {
   try {
     // Validate The User .
@@ -14,6 +14,14 @@ app.post("/signup", async (req, res) => {
 
     // Getting The Contents from User !
     const { FirstName, LastName, Email, Password } = req.body;
+
+    //  3. Check if user with same email already exists
+    const existingUser = await User.findOne({ Email });
+    if (existingUser) {
+      return res
+        .status(400)
+        .send("A user with this email already exists! Please log in instead.");
+    }
 
     // Encrypting The Password.
     const PasswordHash = await bcrypt.hash(Password, 10);
@@ -23,7 +31,7 @@ app.post("/signup", async (req, res) => {
       FirstName,
       LastName,
       Email,
-      Password : PasswordHash,
+      Password: PasswordHash,
     });
 
     await user.save();
@@ -33,12 +41,37 @@ app.post("/signup", async (req, res) => {
   }
 });
 
+// Signin End Point .
+app.post("/signin", async (req, res) => {
+
+  try {
+    const { Email, Password } = req.body;
+    
+    const user = await User.findOne({ Email }).select("+Password");
+   
+    if (!user) {
+      throw new Error("Invalid Credentials !");
+    }
+    
+  
+    const IsPasswordValid = await bcrypt.compare(Password, user.Password);
+   
+
+    if (!IsPasswordValid) {
+      throw new Error("Invalid Credentials !");
+    } else {
+      res.send("Login Successfull ! ");
+    }
+  } catch (err) {
+    res.status(400).send("The Error is " + err);
+  }
+});
 
 //It will be search user by Email .
 app.get("/user", async (req, res) => {
   try {
     const email = req.body.email;
-    console.log("hi");
+  
     const user = await User.find({ Email: email });
     if (user.length === 0) {
       res.send("User Does Not Exist !! ");
