@@ -158,6 +158,13 @@ app.patch("/user/:id", async (req, res) => {
   }
 });
 
+app.post("/sendConnectionRequest", Userauth, (req, res) => {
+  const user = req.user;
+  console.log("Sending A connection Request");
+
+  res.send(user.FirstName + " Sent The Connection request !!");
+});
+
 dbConnection().then(() => {
   console.log("Database Established !! ");
   app.listen(3000, () => {
