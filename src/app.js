@@ -7,6 +7,7 @@ const bcrypt = require("bcrypt");
 var cookieParser = require("cookie-parser");
 var jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
+const { Userauth } = require("../middlewares/auth");
 dotenv.config();
 
 app.use(express.json());
@@ -74,17 +75,10 @@ app.post("/signin", async (req, res) => {
   }
 });
 //Profile Section
-app.get("/profile", async (req, res) => {
+app.get("/profile", Userauth, async (req, res) => {
   try {
-    const cookies = req.cookies;
-    const { token } = cookies;
-   
-
-    var decoded = await jwt.verify(token, "process.env.JWT_SECRET_KEY");
-
-    const { _id } = decoded;
-    const user = await User.findOne({_id : _id})
-    res.send(user)
+    const user = req.user;
+    res.send(user);
   } catch (err) {
     res.send("The error is " + err.message);
   }
