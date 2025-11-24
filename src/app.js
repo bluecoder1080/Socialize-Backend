@@ -12,6 +12,12 @@ dotenv.config();
 
 app.use(express.json());
 app.use(cookieParser());
+
+// Hello World / Root endpoint
+app.get("/", (req, res) => {
+  res.json({ message: "Hello World! Welcome to Socialize Backend API" });
+});
+
 // Signup End Point .
 app.post("/signup", async (req, res) => {
   try {
