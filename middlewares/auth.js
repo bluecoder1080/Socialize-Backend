@@ -18,7 +18,7 @@ const Userauth = async (req, res, next) => {
   req.user = user; // Sendig the user 
   next();
 };
-console.log("HIi")
+
 module.exports = {
   Userauth,
 };
