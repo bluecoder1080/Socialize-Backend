@@ -7,12 +7,15 @@ const bcrypt = require("bcrypt");
 var cookieParser = require("cookie-parser");
 var jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
-const { Userauth } = require("../middlewares/auth");
-dotenv.config();
+const { Userauth } = require("./middlewares/auth");
 
+dotenv.config();
+// All The Routers .
 const Authrouter = require("./Routes/auth");
+const Profilerouter = require("./Routes/profile");
 
 app.use("/", Authrouter);
+app.use("/", Profilerouter);
 
 app.use(express.json());
 app.use(cookieParser());
@@ -81,14 +84,14 @@ app.use(cookieParser());
 //   }
 // });
 //Profile Section
-app.get("/profile", Userauth, async (req, res) => {
-  try {
-    const user = req.user;
-    res.send(user);
-  } catch (err) {
-    res.send("The error is " + err.message);
-  }
-});
+// app.get("/profile", Userauth, async (req, res) => {
+//   try {
+//     const user = req.user;
+//     res.send(user);
+//   } catch (err) {
+//     res.send("The error is " + err.message);
+//   }
+// });
 //It will be search user by Email .
 app.get("/user", async (req, res) => {
   try {
