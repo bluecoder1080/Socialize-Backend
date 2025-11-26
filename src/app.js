@@ -13,85 +13,15 @@ dotenv.config();
 // All The Routers .
 const Authrouter = require("./Routes/auth");
 const Profilerouter = require("./Routes/profile");
+const ConnectionRequest = require("./Routes/sendConnectionRequest");
 
 app.use("/", Authrouter);
 app.use("/", Profilerouter);
+app.use("/", ConnectionRequest);
 
 app.use(express.json());
 app.use(cookieParser());
-// Signup End Point .
-// app.post("/signup", async (req, res) => {
-//   try {
-//     // Validate The User .
-//     validateSignupData(req);
 
-//     // Getting The Contents from User !
-//     const { FirstName, LastName, Email, Password } = req.body;
-
-//     //  3. Check if user with same email already exists
-//     const existingUser = await User.findOne({ Email });
-//     if (existingUser) {
-//       return res
-//         .status(400)
-//         .send("A user with this email already exists! Please log in instead.");
-//     }
-
-//     // Encrypting The Password.
-//     const PasswordHash = await bcrypt.hash(Password, 10);
-
-//     // Creating New Instance of User .
-//     const user = new User({
-//       FirstName,
-//       LastName,
-//       Email,
-//       Password: PasswordHash,
-//     });
-
-//     await user.save();
-//     res.send("User Added Successfully !!!");
-//   } catch (err) {
-//     res.status(400).send("Error While Saving the user" + err.message);
-//   }
-// });
-
-// Signin End Point .
-// app.post("/signin", async (req, res) => {
-//   try {
-//     const { Email, Password } = req.body;
-
-//     const user = await User.findOne({ Email }).select("+Password");
-
-//     if (!user) {
-//       throw new Error("Invalid Credentials !");
-//     }
-
-//     const IsPasswordValid = await bcrypt.compare(Password, user.Password);
-
-//     if (IsPasswordValid) {
-//       // Token in form of cookie !
-
-//       var token = jwt.sign({ _id: user._id }, "process.env.JWT_SECRET_KEY", {
-//         expiresIn: "7d",
-//       });
-
-//       res.cookie("token", token);
-//       res.send("Login Successfull ! ");
-//     } else {
-//       throw new Error("Invalid Credentials !");
-//     }
-//   } catch (err) {
-//     res.status(400).send("The Error is " + err);
-//   }
-// });
-//Profile Section
-// app.get("/profile", Userauth, async (req, res) => {
-//   try {
-//     const user = req.user;
-//     res.send(user);
-//   } catch (err) {
-//     res.send("The error is " + err.message);
-//   }
-// });
 //It will be search user by Email .
 app.get("/user", async (req, res) => {
   try {
@@ -165,13 +95,6 @@ app.patch("/user/:id", async (req, res) => {
   } catch (e) {
     res.status(400).send({ error: e.message });
   }
-});
-
-app.post("/sendConnectionRequest", Userauth, (req, res) => {
-  const user = req.user;
-  console.log("Sending A connection Request");
-
-  res.send(user.FirstName + " Sent The Connection request !!");
 });
 
 dbConnection().then(() => {

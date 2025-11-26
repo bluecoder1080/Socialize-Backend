@@ -6,6 +6,7 @@ const bcrypt = require("bcrypt");
 var cookieParser = require("cookie-parser");
 var jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
+const { Userauth } = require("../middlewares/auth");
 // const { Userauth } = require("../middlewares/auth");
 dotenv.config();
 
@@ -66,6 +67,7 @@ Authrouter.post("/signin", async (req, res) => {
       });
 
       res.cookie("token", token);
+      
       res.send("Login Successfull ! ");
     } else {
       throw new Error("Invalid Credentials !");
@@ -73,6 +75,14 @@ Authrouter.post("/signin", async (req, res) => {
   } catch (err) {
     res.status(400).send("The Error is " + err);
   }
+});
+
+Authrouter.post("/logout",  (req, res) => {
+  res.cookie("token", null, {
+    expires: new Date(Date.now()),
+  });
+
+  return res.status(200).json({ message: "Logout successful!" });
 });
 
 module.exports = Authrouter;
