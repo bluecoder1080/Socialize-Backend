@@ -1,5 +1,5 @@
 var jwt = require("jsonwebtoken");
-const User = require("../src/models/user");
+const User = require("../models/user");
 const dotenv = require("dotenv");
 dotenv.config();
 
@@ -15,10 +15,10 @@ const Userauth = async (req, res, next) => {
   if (!user) {
     throw new Error("User Not Found !!");
   }
-  req.user = user; // Sendig the user 
+  req.user = user; // Sendig the user
   next();
 };
-console.log("HIi")
+console.log("HIi");
 module.exports = {
   Userauth,
 };
