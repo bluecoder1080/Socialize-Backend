@@ -63,7 +63,9 @@ app.post("/signin", async (req, res) => {
     if (IsPasswordValid) {
       // Token in form of cookie !
 
-      var token = jwt.sign({ _id: user._id }, "process.env.JWT_SECRET_KEY");
+      var token = jwt.sign({ _id: user._id }, "process.env.JWT_SECRET_KEY", {
+        expiresIn: "7d",
+      });
 
       res.cookie("token", token);
       res.send("Login Successfull ! ");
