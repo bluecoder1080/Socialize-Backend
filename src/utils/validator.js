@@ -27,7 +27,17 @@ const validateProfileData = (req) => {
   return isEditAllowed;
 };
 
+const validatePasswordData = (req) => {
+  const validPass = ["newPassword", "currentPassword"];
+
+  const isOnlyPassword = Object.keys(req.body).every((field) =>
+    validPass.includes(field)
+  );
+  return isOnlyPassword;
+};
+
 module.exports = {
   validateSignupData,
   validateProfileData,
+  validatePasswordData,
 };
