@@ -6,8 +6,7 @@ const bcrypt = require("bcrypt");
 var cookieParser = require("cookie-parser");
 var jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
-const { Userauth } = require("../middlewares/auth");
-// const { Userauth } = require("../middlewares/auth");
+
 dotenv.config();
 
 Authrouter.use(express.json());
@@ -62,7 +61,7 @@ Authrouter.post("/signin", async (req, res) => {
     if (IsPasswordValid) {
       // Token in form of cookie !
 
-      var token = jwt.sign({ _id: user._id }, "process.env.JWT_SECRET_KEY", {
+      var token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET_KEY, {
         expiresIn: "7d",
       });
 
