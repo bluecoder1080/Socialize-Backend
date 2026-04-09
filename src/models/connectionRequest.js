@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
-const ConnectionSchema = new Schema(
+const ConnectionRequestSchema = new Schema(
   {
     fromUserId: {
       type: Schema.Types.ObjectId,
@@ -14,7 +14,7 @@ const ConnectionSchema = new Schema(
     },
     status: {
       type: String,
-      enum: ["accepted", "ignored", "rejected", "deleted"],
+      enum: ["accepted", "ignored", "rejected", "interested"],
       required: true,
     },
   },
@@ -23,4 +23,4 @@ const ConnectionSchema = new Schema(
   },
 );
 
-module.exports = mongoose.model("Connection", ConnectionSchema);
+module.exports = mongoose.model("ConnectionRequest", ConnectionRequestSchema);
