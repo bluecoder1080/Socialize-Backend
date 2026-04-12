@@ -4,7 +4,7 @@ const { Userauth } = require("../middlewares/auth");
 const ConnectionRequest = require("../models/connectionRequest");
 
 sendConnectionRequestRouter.post(
-  "/sendConnectionRequest/:status/:toUserId",
+  "/request/send/:status/:toUserId",
   Userauth,
   async (req, res) => {
     const fromUserId = req.user._id;
@@ -17,6 +17,12 @@ sendConnectionRequestRouter.post(
         message: "Invalid Status:  " + status,
       });
     }
+  const existingConnectionRequest = await ConnectionRequest.findOne({
+  $or: [
+    { fromUserId, toUserId }, // A → B
+    { fromUserId: toUserId, toUserId: fromUserId } // B → A
+  ],
+});
 
     const connectionRequest = new ConnectionRequest({
       fromUserId,
