@@ -22,5 +22,14 @@ const ConnectionRequestSchema = new Schema(
     timestamps: true,
   },
 );
+ConnectionRequestSchema.pre("save", function (next) {
+  const connectionRequest = this;
+  // check if from user and to user is same or not
+  if (connectionRequest.fromUserId.equals(connectionRequest.toUserId)) {
+    throw new Error("Cannot send connection request to the same");
+  }
+  next();
+});
 
+ConnectionRequestSchema.index({ fromUserId: 1, toUserId: 1 });
 module.exports = mongoose.model("ConnectionRequest", ConnectionRequestSchema);
