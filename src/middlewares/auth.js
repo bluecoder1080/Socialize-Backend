@@ -15,9 +15,10 @@ const Userauth = async (req, res, next) => {
   if (!user) {
     throw new Error("User Not Found !!");
   }
-  req.user = user; // Sendig the user
+  req.user = user; // Sending the user
   next();
 };
+
 // console.log("HIi");
 module.exports = {
   Userauth,
