@@ -14,6 +14,7 @@ dotenv.config();
 const Authrouter = require("./Routes/auth");
 const Profilerouter = require("./Routes/profile");
 const ConnectionRequest = require("./Routes/sendConnectionRequest");
+const userRouter = require("./Routes/user");
 
 app.use(express.json());
 app.use(cookieParser());
@@ -21,6 +22,7 @@ app.use(cookieParser());
 app.use("/", Authrouter);
 app.use("/", Profilerouter);
 app.use("/", ConnectionRequest);
+app.use("/", userRouter);
 
 //It will be search user by Email .
 app.get("/user", async (req, res) => {
