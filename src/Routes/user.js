@@ -48,4 +48,14 @@ userRouter.get("/user/connections", Userauth, async (req, res) => {
   }
 });
 
+// Feed Api
+userRouter.get("/feed", Userauth, async (req, res) => {
+  try {
+  } catch (err) {
+    res.status(400).json({
+      message: err.message,
+    });
+  }
+});
+
 module.exports = userRouter;
