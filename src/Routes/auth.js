@@ -9,6 +9,13 @@ const dotenv = require("dotenv");
 
 dotenv.config();
 
+const isProduction = process.env.NODE_ENV === "production";
+const cookieOptions = {
+  httpOnly: true,
+  sameSite: isProduction ? "none" : "lax",
+  secure: isProduction,
+};
+
 Authrouter.use(express.json());
 Authrouter.use(cookieParser());
 
@@ -65,7 +72,7 @@ Authrouter.post("/signin", async (req, res) => {
         expiresIn: "7d",
       });
 
-      res.cookie("token", token);
+      res.cookie("token", token, cookieOptions);
       
       res.send("Login Successfull ! ");
     } else {
@@ -77,9 +84,7 @@ Authrouter.post("/signin", async (req, res) => {
 });
 
 Authrouter.post("/logout",  (req, res) => {
-  res.cookie("token", null, {
-    expires: new Date(Date.now()),
-  });
+  res.clearCookie("token", cookieOptions);
 
   return res.status(200).json({ message: "Logout successful!" });
 });

@@ -11,6 +11,51 @@ const { Userauth } = require("./middlewares/auth");
 
 dotenv.config();
 const PORT = process.env.PORT || 3000;
+const allowedOrigins = new Set(
+  [
+    process.env.FRONTEND_URL,
+    process.env.CORS_ORIGIN,
+    "http://localhost:5173",
+    "http://localhost:3001",
+    "https://socialize-frontend-one.vercel.app",
+  ].filter(Boolean),
+);
+
+const isAllowedOrigin = (origin) => {
+  if (!origin) {
+    return true;
+  }
+
+  return allowedOrigins.has(origin);
+};
+
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+
+  if (isAllowedOrigin(origin)) {
+    if (origin) {
+      res.setHeader("Access-Control-Allow-Origin", origin);
+    }
+
+    res.setHeader("Vary", "Origin");
+    res.setHeader("Access-Control-Allow-Credentials", "true");
+    res.setHeader(
+      "Access-Control-Allow-Headers",
+      req.headers["access-control-request-headers"] || "Content-Type, Authorization",
+    );
+    res.setHeader(
+      "Access-Control-Allow-Methods",
+      "GET,POST,PUT,PATCH,DELETE,OPTIONS",
+    );
+  }
+
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(204);
+  }
+
+  return next();
+});
+
 // All The Routers .
 const Authrouter = require("./Routes/auth");
 const Profilerouter = require("./Routes/profile");
