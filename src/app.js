@@ -10,6 +10,7 @@ const dotenv = require("dotenv");
 const { Userauth } = require("./middlewares/auth");
 
 dotenv.config();
+const PORT = process.env.PORT || 3000;
 // All The Routers .
 const Authrouter = require("./Routes/auth");
 const Profilerouter = require("./Routes/profile");
@@ -101,7 +102,7 @@ app.patch("/user/:id", async (req, res) => {
 
 dbConnection().then(() => {
   console.log("Database Established !! ");
-  app.listen(3000, () => {
-    console.log("Server is Listening to Port 3000");
+  app.listen(PORT, () => {
+    console.log(`Server is Listening to Port ${PORT}`);
   });
 });
