@@ -4,19 +4,24 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const Userauth = async (req, res, next) => {
-  const { token } = req.cookies;
-  if (!token) {
-    throw new Error("Token is not valid");
-  }
+  try {
+    const { token } = req.cookies;
+    if (!token) {
+      return res.status(401).json({ message: "Authentication required" });
+    }
 
-  const decodedObj = jwt.verify(token, process.env.JWT_SECRET_KEY);
-  const { _id } = decodedObj;
-  const user = await User.findById(_id);
-  if (!user) {
-    throw new Error("User Not Found !!");
+    const decodedObj = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    const { _id } = decodedObj;
+    const user = await User.findById(_id);
+    if (!user) {
+      return res.status(401).json({ message: "User not found" });
+    }
+
+    req.user = user; // Sending the user
+    return next();
+  } catch (error) {
+    return res.status(401).json({ message: "Token is not valid" });
   }
-  req.user = user; // Sending the user
-  next();
 };
 
 // console.log("HIi");

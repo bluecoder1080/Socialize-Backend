@@ -1,6 +1,7 @@
 const express = require("express");
 const { Userauth } = require("../middlewares/auth");
 const ConnectionRequest = require("../models/connectionRequest");
+const User = require("../models/user");
 const userRouter = express.Router();
 
 userRouter.get("/user/requests/received", Userauth, async (req, res) => {
@@ -48,9 +49,39 @@ userRouter.get("/user/connections", Userauth, async (req, res) => {
   }
 });
 
-// Feed Api
+// Feed API - Returns users to connect with
 userRouter.get("/feed", Userauth, async (req, res) => {
   try {
+    const loggedInUser = req.user;
+    const skip = parseInt(req.query.skip) || 0;
+    const limit = parseInt(req.query.limit) || 10;
+
+    // Get all connection requests involving the logged-in user
+    const connectionRequests = await ConnectionRequest.find({
+      $or: [{ fromUserId: loggedInUser._id }, { toUserId: loggedInUser._id }],
+    }).select("fromUserId toUserId");
+
+    // Collect all user IDs to exclude from feed
+    const excludeUserIds = new Set();
+    excludeUserIds.add(loggedInUser._id.toString()); // Exclude self
+
+    connectionRequests.forEach((request) => {
+      excludeUserIds.add(request.fromUserId.toString());
+      excludeUserIds.add(request.toUserId.toString());
+    });
+
+    // Fetch users not in exclude list with pagination
+    const feed = await User.find({
+      _id: { $nin: Array.from(excludeUserIds) },
+    })
+      .select("FirstName LastName Gender photoUrl About Skills")
+      .skip(skip)
+      .limit(limit);
+
+    res.status(200).json({
+      message: "Feed fetched successfully!",
+      data: feed,
+    });
   } catch (err) {
     res.status(400).json({
       message: err.message,
